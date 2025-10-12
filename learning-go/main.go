@@ -1,29 +1,62 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"log"
-
-	"github.com/owinymarvin/go_app_udemy/helpers"
 )
 
-const constNumPool = 10
-
-func CalculateValue(intChan chan int) {
-	randomNumber := helpers.RandomNumber(constNumPool)
-	intChan <- randomNumber
-
+type Person struct {
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	HairColor string `json:"hair_color"`
+	HasDog    bool   `json:"has_dog"`
 }
 
 func main() {
-	// channel, received in 1 or more places in program
-	intChannel := make(chan int)
-	defer close(intChannel) // closes the channel to prevent memory leaks
+	myJSON := `[
+		{
+		"first_name": "Clark",
+		"last_name": "Kent", 
+		"hair_color": "black",
+		"has_dog": true
+		}, 
+		{
+		"first_name": "Bruce",
+		"last_name": "Wayne",
+		"hair_color": "black",
+		"has_dog": false
+		}
+	]`
 
-	// concurrent operation, or go routine.
-	// A go routines run at the same time. So concurrency
-	//calls the function defined above
-	go CalculateValue(intChannel)
+	var unmarshalled []Person
+	err := json.Unmarshal([]byte(myJSON), &unmarshalled)
+	if err != nil {
+		log.Println("Error unmarshalling json", err)
+	}
+	log.Printf("unmarshalled: %v", unmarshalled)
 
-	num := <-intChannel // waits for the channel to return a value
-	log.Println(num)
+	// write json from a struct
+	var mySlice []Person
+	var marshal1 Person
+	marshal1.FirstName = "Diana"
+	marshal1.LastName = "Prince"
+	marshal1.HairColor = "red"
+	marshal1.HasDog = false
+
+	mySlice = append(mySlice, marshal1)
+
+	var marshal2 Person
+	marshal2.FirstName = "Kara"
+	marshal2.LastName = "Zor-El"
+	marshal2.HairColor = "blonde"
+	marshal2.HasDog = true
+
+	mySlice = append(mySlice, marshal2)
+
+	newJSON, err := json.MarshalIndent(mySlice, "", "	")
+	if err != nil {
+		log.Println("Error marshalling json", err)
+	}
+	fmt.Println(string(newJSON) )
 }
