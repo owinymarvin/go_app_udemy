@@ -1,6 +1,10 @@
 package helpers
 
-type SomeType struct {
-	TypeName   string
-	TypeNumber int
+import (
+	"math/rand"
+)
+
+func RandomNumber(n int) int {
+	value := rand.Intn(n)
+	return value
 }
