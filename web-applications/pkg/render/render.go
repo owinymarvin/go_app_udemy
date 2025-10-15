@@ -18,8 +18,13 @@ func NewTemplates(a *config.AppConfig) {
 
 // make it start with an upercase letter to make it publicly available
 func RenderTemplate(w http.ResponseWriter, tmpl string) {
-	// get the template cache from the app config.
-	tc := app.TemplateCache
+	var tc map[string]*template.Template
+	// dev mode, to always pull from cache
+	if app.UseCache {
+		tc = app.TemplateCache
+	} else {
+		tc, _ = CreateTemplateCache()
+	}
 
 	// get requested template from cache
 	t, ok := tc[tmpl]
