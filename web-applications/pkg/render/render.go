@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/owinymarvin/go_app_udemy/pkg/config"
+	"github.com/owinymarvin/go_app_udemy/pkg/models"
 )
 
 var app *config.AppConfig
@@ -16,8 +17,13 @@ func NewTemplates(a *config.AppConfig) {
 	app = a
 }
 
+// add default data to all templates
+func AddDefaultData(td *models.TemplateData) *models.TemplateData {
+	return td
+}
+
 // make it start with an upercase letter to make it publicly available
-func RenderTemplate(w http.ResponseWriter, tmpl string) {
+func RenderTemplate(w http.ResponseWriter, tmpl string, td *models.TemplateData) {
 	var tc map[string]*template.Template
 	// dev mode, to always pull from cache
 	if app.UseCache {
@@ -35,7 +41,10 @@ func RenderTemplate(w http.ResponseWriter, tmpl string) {
 	// declare a buffer to again thoroughly check through and see no erros are present
 	//optional
 	buf := new(bytes.Buffer)
-	_ = t.Execute(buf, nil)
+
+	td = AddDefaultData(td)
+	_ = t.Execute(buf, td)
+
 	_, err := buf.WriteTo(w)
 	if err != nil {
 		log.Println(err)

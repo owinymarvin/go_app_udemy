@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/owinymarvin/go_app_udemy/pkg/config"
+	"github.com/owinymarvin/go_app_udemy/pkg/models"
 	"github.com/owinymarvin/go_app_udemy/pkg/render"
 )
 
@@ -27,12 +28,16 @@ func NewHandlers(r *Repository) {
 }
 
 func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "home.page.html")
+	render.RenderTemplate(w, "home.page.html", &models.TemplateData{})
 	log.Println("Request URL:", r.URL.Path)
 }
 
 func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "about.page.html")
 	log.Println("Request URL:", r.URL.Path)
+	// perform some logic
+	stringMap := map[string]string{}
+	stringMap["test"] = "Hello, again."
 
+	// send data to the template
+	render.RenderTemplate(w, "about.page.html", &models.TemplateData{StringMap: stringMap})
 }
