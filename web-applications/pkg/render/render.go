@@ -6,16 +6,20 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
+
+	"github.com/owinymarvin/go_app_udemy/pkg/config"
 )
+
+var app *config.AppConfig
+
+func NewTemplates(a *config.AppConfig) {
+	app = a
+}
 
 // make it start with an upercase letter to make it publicly available
 func RenderTemplate(w http.ResponseWriter, tmpl string) {
-	// get the template cache from the app config. 
-
-	tc, err := CreateTemplateCache()
-	if err != nil {
-		log.Fatal(err)
-	}
+	// get the template cache from the app config.
+	tc := app.TemplateCache
 
 	// get requested template from cache
 	t, ok := tc[tmpl]
@@ -26,7 +30,8 @@ func RenderTemplate(w http.ResponseWriter, tmpl string) {
 	// declare a buffer to again thoroughly check through and see no erros are present
 	//optional
 	buf := new(bytes.Buffer)
-	err = t.Execute(buf, nil)
+	_ = t.Execute(buf, nil)
+	_, err := buf.WriteTo(w)
 	if err != nil {
 		log.Println(err)
 	}
